@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<strings>
+    <!-- Add-on messages id=32001 to 32030 -->
+        <string id="32001">Enable movie update</string>
+        <string id="32002">Enable tvshow update</string>
+        <string id="32003">Enable music update</string>
+        <string id="32004">Movie ratings</string>
+        <string id="32005">Get ratings from</string>
+        <string id="32006">Movie certification</string>
+        <string id="32007">Get certification from</string>
+        <string id="32008">Preferred country</string>
+        <string id="32009">Certificate notation</string>
+        <string id="32010">Movies</string>
+        <string id="32011">Advanced</string>
+        <string id="32012">Debug on</string>
+        <string id="32013">Start</string>
+        <string id="32014">Cancel</string>
+        <string id="32015">Would you like to update your library info?</string>
+        <string id="32016">This will overwrite all your current information!</string>
+        <string id="32017">Processed</string>
+</strings>

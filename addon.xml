@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon
+	id="script.library.info.update"
+	name="Library info update"
+	version="0.0.1"
+	provider-name="Martijn, Team-XBMC"
+  >
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="xbmc.addon" version="11.9.2"/>
+    <import addon="xbmc.json" version="4.0"/>
+    <import addon="script.module.elementtree" version="1.2.7"/>
+    <import addon="script.module.simplejson" version="2.0.10" optional="true"/>
+    <import addon="script.common.plugin.cache" version="0.9.1"/>
+  </requires>
+  <extension point="xbmc.python.script" library="default.py">
+    <provides>executable</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <language></language>
+    <summary lang="en">Update library info</summary>
+    <description lang="en">Update library info</description>
+    <disclaimer lang="en">For bugs, requests or general questions visit the XBMC forum.</disclaimer>
+    <platform>all</platform>
+  </extension>
+</addon>

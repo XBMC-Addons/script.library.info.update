@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings>
+<!-- Plugin settings: Movie section -->
+    <category label="32010" id="section_movie">
+        <setting label="32001" type="bool" id="movie_enable" default="false" />
+        <setting type="sep" />
+        <setting label="32004" type="lsep" />
+        <setting label="32005" type="labelenum" id="movie_rating" subsetting="true" enable="eq(-3,true)" values="Off|themoviedb.org" default="themoviedb.org"/>
+        <setting label="32006" type="lsep" />
+        <setting label="32007" type="labelenum" id="movie_cert" subsetting="true" enable="eq(-5,true)" values="Off|themoviedb.org" default="themoviedb.org"/>
+        <setting label="32008" type="labelenum" id="movie_cert_lang" subsetting="true"
+        values="da|fi|nl|de|it|es|fr|pl|hu|el|tr|ru|he|ja|pt|zh|cs|sl|hr|ko|en|sv|no" visible="!eq(-1,0)" enable="eq(-6,true)" default="en"/>
+        <setting label="32009" type="enum" id="movie_cert_nota" subsetting="true" visible="!eq(-2,0)" values="Rated xx|ISO639-1_xx|ISO639-1:xx" enable="eq(-7,true)" default="1"/>
+    </category>
+<!-- Plugin settings: Advanced section -->
+    <category label="32011" id="section_advanced">
+        <setting label="32012" type="bool" id="debug_enabled" default="false"/>
+    </category>
+</settings>
