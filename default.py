@@ -131,7 +131,7 @@ def update_movie(movie_list):
                     #item['rating'] = float("%.1f" % float(item['rating']))
                     #data_rating['rating'] = float("%.1f" % float(data_rating['rating']))
                     #if item['rating'] < data_rating['rating']:
-                    if item['votes'] < data_rating['votes']:
+                    if item['votes'] != data_rating['votes']:
                         log('new rating: %s, old rating: %s' %(data_rating['rating'], item['rating']))
                         log('new votes: %s, old votes: %s' %(data_rating['votes'], item['votes']))
                         new_info['rating'] = float(data_rating['rating'])
@@ -218,7 +218,7 @@ def update_movie(movie_list):
                             new_info['mpaa'] = new_mpaa
                             update_media = True
                     if __addon__.getSetting(id="movie_rating") == 'IMDb' and movie_data['rating']:
-                        if item['votes'] < movie_data['votes']:
+                        if item['votes'] != movie_data['votes']:
                             log('new rating: %s, old rating: %s' %(movie_data['rating'], item['rating']))
                             log('new votes: %s, old votes: %s' %(movie_data['votes'], item['votes']))
                             new_info['rating'] = float(movie_data['rating'])
