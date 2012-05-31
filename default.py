@@ -89,7 +89,7 @@ def update_movie(movie_list):
             log('XBMC abort requested, aborting')
             break
         dialog_msg('update',
-                   percentage = int(processeditems / totalitems * 100.0),
+                   percentage = int(float(processeditems) / float(totalitems) * 100.0),
                    line1 = '%s %s / %s' %(__localize__(32017), processeditems, totalitems),
                    line2 = item['name'],
                    background = False)
