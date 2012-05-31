@@ -11,8 +11,8 @@ from traceback import print_exc
 from urllib2 import HTTPError, URLError
 from resources.lib.script_exceptions import *
 from resources.lib import utils
-from resources.lib.settings import settings
 from resources.lib.utils import log
+
 THUMBS_CACHE_PATH = xbmc.translatePath( "special://profile/Thumbnails/Video" )
 
 
@@ -29,8 +29,6 @@ class fileops:
 
     def __init__(self):
         log("Setting up fileops")
-        self.settings = settings()
-        self.settings._get_general()
         self._exists = lambda path: xbmcvfs.exists(path)
         self._rmdir = lambda path: xbmcvfs.rmdir(path)
         self._mkdir = lambda path: xbmcvfs.mkdir(path)
@@ -60,7 +58,6 @@ class fileops:
         if not isdeleted:
             log("[%s] Ignoring (%s): %s" % (media_name, reason, filename))
 
-    
 
     # copy file from temp to final location
     def _copyfile(self, sourcepath, targetpath, media_name = ''):
@@ -74,7 +71,7 @@ class fileops:
             log("[%s] Copied successfully: %s" % (media_name, targetpath) )
 
     # download file
-    def _downloadfile(self, url, filename, targetdirs, media_name, mode = ""):
+    def _downloadfile(self, url, filename, targetdir, media_name):
         try:
             temppath = os.path.join(self.tempdir, filename)
             tempfile = open(temppath, "wb")
@@ -96,7 +93,21 @@ class fileops:
         else:
             log("[%s] Downloaded: %s" % (media_name, filename))
             self.downloadcount += 1
-            for targetdir in targetdirs:
-                #targetpath = os.path.join(urllib.url2pathname(targetdir).replace('|',':'), filename)
-                targetpath = os.path.join(targetdir, filename)
-                self._copyfile(temppath, targetpath, media_name)
+            targetpath = os.path.join(targetdir, filename)
+            self._copyfile(temppath, targetpath, media_name)
+
+        
+        def cleanup(self):
+            if self.fileops._exists(self.fileops.tempdir):
+                dialog_msg('update', percentage = 100, line1 = __localize__(32005), background = False)
+                log('Cleaning up temp files')
+                for x in os.listdir(self.fileops.tempdir):
+                    tempfile = os.path.join(self.fileops.tempdir, x)
+                    self.fileops._delete(tempfile)
+                    if self.fileops._exists(tempfile):
+                        log('Error deleting temp file: %s' % tempfile, xbmc.LOGERROR)
+                self.fileops._rmdir(self.fileops.tempdir)
+                if self.fileops._exists(self.fileops.tempdir):
+                    log('Error deleting temp directory: %s' % self.fileops.tempdir, xbmc.LOGERROR)
+                else:
+                    log('Deleted temp directory: %s' % self.fileops.tempdir)

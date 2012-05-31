@@ -95,7 +95,7 @@ def get_ratings(media_id):
 
 def get_releases(media_id):
     url = 'http://api.themoviedb.org/3/movie/%s/releases?api_key=%s&language=%s'
-    api_data = get_data(url%(media_id, API_KEY, __addon__.getSetting("movie_cert_lang") == '0'), 'json')
+    api_data = get_data(url%(media_id, API_KEY, __addon__.getSetting("movie_cert_lang_tmdb") == '0'), 'json')
     data = []
     if api_data == "Empty" or not api_data:
         return data

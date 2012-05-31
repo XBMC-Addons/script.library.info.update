@@ -59,7 +59,7 @@ def __get_library(media_type):
                                   'file': item.get('file',''),
                                   'path': media_path(item.get('file','')),
                                   'trailer': item.get('trailer','')})
-                    
+
     elif media_type == 'musicvideo':
         json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["file", "artist", "album", "track", "runtime", "year", "genre"], "sort": { "method": "album" } }, "id": 1}')
         json_response = unicode(json_response, 'utf-8', errors='ignore')

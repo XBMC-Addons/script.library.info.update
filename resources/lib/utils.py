@@ -29,12 +29,12 @@ try:
 except:
     import storageserverdummy as StorageServer
 
-cache = StorageServer.StorageServer("LibraryInfoUpdate",168)
+cache = StorageServer.StorageServer("LibraryInfoUpdate",48)
 
 ### Adjust default timeout to stop script hanging
 socket.setdefaulttimeout(20)
 ### Cache bool
-CACHE_ON = False
+CACHE_ON = True
 
 ### Declare dialog
 dialog = xbmcgui.DialogProgress()

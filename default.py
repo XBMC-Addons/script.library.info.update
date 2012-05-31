@@ -22,8 +22,10 @@ from resources.lib.utils import *
 from resources.lib.media_setup import __get_library as get_library
 from resources.lib.media_setup import __set_library as set_library
 from resources.lib.provider import tmdb
+from resources.lib.provider import imdb
 from resources.lib.script_exceptions import *
 from xml.parsers.expat import ExpatError
+from resources.lib.fileops import fileops
 
 class Main:
 
@@ -34,10 +36,18 @@ class Main:
                       background = False,
                       nolabel = __localize__(32014),
                       yeslabel = __localize__(32013)):
-            if __addon__.getSetting("movie_enable") == 'true':
-                media_list = get_medialist('movie')
-                if media_list:
-                    update_movie(media_list)
+            try:
+                # Creates temp folder
+                fileops()
+            except CreateDirectoryError, e:
+                log('Could not create directory: %s' % str(e))
+                return False
+            else:
+                if __addon__.getSetting("movie_enable") == 'true':
+                    media_list = get_medialist('movie')
+                    if media_list:
+                        update_movie(media_list)
+            dialog_msg("close")
 
 
 ### retrieve list from library
@@ -87,6 +97,8 @@ def update_movie(movie_list):
         #Check for IMDB id
         update_media = False
         if item['imdbnumber'].startswith('tt'):
+            log('------------')
+            log(item['name'])
             # Handle themoviedb.org
             if __addon__.getSetting(id="movie_rating") == 'themoviedb.org':
                 data_rating = ''
@@ -116,10 +128,12 @@ def update_movie(movie_list):
                 if errmsg:
                     log(errmsg)
                 if data_rating:
-                    item['rating'] = float("%.1f" % float(item['rating']))
-                    data_rating['rating'] = float("%.1f" % float(data_rating['rating']))
-                    if item['rating'] < data_rating['rating']:
+                    #item['rating'] = float("%.1f" % float(item['rating']))
+                    #data_rating['rating'] = float("%.1f" % float(data_rating['rating']))
+                    #if item['rating'] < data_rating['rating']:
+                    if item['votes'] < data_rating['votes']:
                         log('new rating: %s, old rating: %s' %(data_rating['rating'], item['rating']))
+                        log('new votes: %s, old votes: %s' %(data_rating['votes'], item['votes']))
                         new_info['rating'] = float(data_rating['rating'])
                         new_info['votes'] = '"%s"' %data_rating['votes']
                         update_media = True
@@ -159,11 +173,58 @@ def update_movie(movie_list):
                             new_mpaa = '"%s_%s"' %(data_release['iso_3166_1'], data_release['mpaa'])
                         else:
                             new_mpaa = '"%s:%s"' %(data_release['iso_3166_1'], data_release['mpaa'])
-
-                        log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
                         if not item['mpaa'] in new_mpaa:
+                            log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
                             new_info['mpaa'] = new_mpaa
                             update_media = True
+            
+            if (__addon__.getSetting(id="movie_cert") or __addon__.getSetting(id="movie_cert")) == 'IMDb':
+                movie_data = ''
+                errmsg = ''
+                try:
+                    movie_data = imdb.get_ratings(item['imdbnumber'])
+                except HTTP404Error, e:
+                    errmsg = '404: File not found'
+                    data_result = 'skipping'
+                except HTTP503Error, e:
+                    errmsg = '503: API Limit Exceeded'
+                    data_result = 'retrying'
+                except ItemNotFoundError, e:
+                    errmsg = '%s not found' % item['name']
+                    data_result = 'skipping'
+                except ExpatError, e:
+                    errmsg = 'Error parsing xml: %s' % str(e)
+                    data_result = 'retrying'
+                except HTTPTimeout, e:
+                    errmsg = 'Timed out'
+                    data_result = 'skipping'
+                except DownloadError, e:
+                    errmsg = 'Possible network error: %s' % str(e)
+                    data_result = 'skipping'
+                else:
+                    pass
+                if errmsg:
+                    log(errmsg)
+                if movie_data:
+                    if __addon__.getSetting(id="movie_cert") == 'IMDb' and movie_data['mpaa']:
+                        if __addon__.getSetting("movie_cert_nota") == '0':
+                            new_mpaa = '"Rated %s"' %movie_data['mpaa']
+                        elif __addon__.getSetting("movie_cert_nota") == '1':
+                            new_mpaa = '"%s_%s"' %('us', movie_data['mpaa'])
+                        else:
+                            new_mpaa = '"%s:%s"' %('us', movie_data['mpaa'])
+                        if not item['mpaa'] in new_mpaa:
+                            log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
+                            new_info['mpaa'] = new_mpaa
+                            update_media = True
+                    if __addon__.getSetting(id="movie_rating") == 'IMDb' and movie_data['rating']:
+                        if item['votes'] < movie_data['votes']:
+                            log('new rating: %s, old rating: %s' %(movie_data['rating'], item['rating']))
+                            log('new votes: %s, old votes: %s' %(movie_data['votes'], item['votes']))
+                            new_info['rating'] = float(movie_data['rating'])
+                            new_info['votes'] = '"%s"' %movie_data['votes']
+                            update_media = True
+
             log('update: %s' %update_media)
             if update_media:
                 set_library(item, new_info)
