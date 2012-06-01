@@ -24,7 +24,7 @@ def get_ratings(media_id):
         try:
             data = {'rating': api_data.get('imdbRating',''),
                     'votes': api_data.get('imdbVotes',''),
-                    'mpaa': api_data.get('Rated','')}
+                    'mpaa': api_data.get('Rated','').upper()}
             if data['rating'] == 'N/A':
                 data['rating'] = ''
         except Exception, e:

@@ -71,7 +71,7 @@ def update_movie(movie_list):
             'plot': 'null',
             'genre': 'null',
             'rating': 'null',
-            'mpaa': 'null',
+            'mpaa': '""',
             'imdbnumber': 'null',
             'votes': 'null',
             'lastplayed': 'null',
@@ -93,7 +93,6 @@ def update_movie(movie_list):
                    line1 = '%s %s / %s' %(__localize__(32017), processeditems, totalitems),
                    line2 = item['name'],
                    background = False)
-        
         #Check for IMDB id
         update_media = False
         if item['imdbnumber'].startswith('tt'):
@@ -114,9 +113,6 @@ def update_movie(movie_list):
                 except ItemNotFoundError, e:
                     errmsg = '%s not found' % item['name']
                     data_result = 'skipping'
-                except ExpatError, e:
-                    errmsg = 'Error parsing xml: %s' % str(e)
-                    data_result = 'retrying'
                 except HTTPTimeout, e:
                     errmsg = 'Timed out'
                     data_result = 'skipping'
@@ -128,9 +124,6 @@ def update_movie(movie_list):
                 if errmsg:
                     log(errmsg)
                 if data_rating:
-                    #item['rating'] = float("%.1f" % float(item['rating']))
-                    #data_rating['rating'] = float("%.1f" % float(data_rating['rating']))
-                    #if item['rating'] < data_rating['rating']:
                     if item['votes'] != data_rating['votes']:
                         log('new rating: %s, old rating: %s' %(data_rating['rating'], item['rating']))
                         log('new votes: %s, old votes: %s' %(data_rating['votes'], item['votes']))
@@ -152,9 +145,6 @@ def update_movie(movie_list):
                 except ItemNotFoundError, e:
                     errmsg = '%s not found' % item['name']
                     data_result = 'skipping'
-                except ExpatError, e:
-                    errmsg = 'Error parsing xml: %s' % str(e)
-                    data_result = 'retrying'
                 except HTTPTimeout, e:
                     errmsg = 'Timed out'
                     data_result = 'skipping'
@@ -192,9 +182,6 @@ def update_movie(movie_list):
                 except ItemNotFoundError, e:
                     errmsg = '%s not found' % item['name']
                     data_result = 'skipping'
-                except ExpatError, e:
-                    errmsg = 'Error parsing xml: %s' % str(e)
-                    data_result = 'retrying'
                 except HTTPTimeout, e:
                     errmsg = 'Timed out'
                     data_result = 'skipping'
@@ -210,9 +197,7 @@ def update_movie(movie_list):
                         if __addon__.getSetting("movie_cert_nota") == '0':
                             new_mpaa = '"Rated %s"' %movie_data['mpaa']
                         elif __addon__.getSetting("movie_cert_nota") == '1':
-                            new_mpaa = '"%s_%s"' %('us', movie_data['mpaa'])
-                        else:
-                            new_mpaa = '"%s:%s"' %('us', movie_data['mpaa'])
+                            new_mpaa = '"%s/%s"' %('US', movie_data['mpaa'])
                         if not item['mpaa'] in new_mpaa:
                             log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
                             new_info['mpaa'] = new_mpaa

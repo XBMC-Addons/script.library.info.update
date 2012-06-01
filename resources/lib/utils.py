@@ -118,7 +118,7 @@ def dialog_msg(action,
 
 # Retrieve JSON data from cache function
 def get_data(url, data_type ='json'):
-    #log('API: %s'% url)
+    log('API: %s'% url)
     if CACHE_ON:
         result = cache.cacheFunction(get_data_new, url, data_type)
     else:
