@@ -12,7 +12,7 @@
         values="cs|da|de|el|en|es|he|fi|fr|hr|hu|it|ja|ko|nl|no|pl|pt|ru|sl|sv|tr|us|zh" visible="eq(-1,1)" enable="eq(-6,true)" default="en"/>
         <setting label="32008" type="labelenum" id="movie_cert_lang_imdb" subsetting="true"
         values="us" visible="eq(-2,2)" enable="eq(-7,true)" default="en"/>
-        <setting label="32009" type="enum" id="movie_cert_nota" subsetting="true" visible="!eq(-3,0)" values="Rated XX|ISO639-1/XX" enable="eq(-8,true)" default="1"/>
+        <setting label="32009" type="enum" id="movie_cert_nota" subsetting="true" visible="!eq(-3,0)" values="Rated XX|ISO639-1/XX|ISO639-1:XX" enable="eq(-8,true)" default="2"/>
     </category>
 <!-- Plugin settings: Advanced section -->
     <category label="32011" id="section_advanced">

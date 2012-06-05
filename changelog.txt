@@ -1,3 +1,5 @@
-[B]0.0.1[/B]
+[B]0.0.3[/B]
+- Added to XBMC pre-Frodo repo
 
+[B]0.0.1[/B]
 - Initial test version

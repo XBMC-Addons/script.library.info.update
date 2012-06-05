@@ -61,6 +61,15 @@ def update_movie(movie_list):
     dialog_msg('create', line1 = 'Library info update', background = False)
     # Walk through media list
     for item in movie_list:
+        if xbmc.abortRequested or dialog_msg('iscanceled'):
+            log('XBMC abort requested, aborting')
+            break
+        dialog_msg('update',
+                   percentage = int(float(processeditems) / float(totalitems) * 100.0),
+                   line1 = '%s %s / %s' %(__localize__(32017), processeditems, totalitems),
+                   line2 = item['name'],
+                   background = False)
+        update_media = False
         new_info = {'imdbnumber': 'null',
             'title': 'null',
             'playcount': 'null',
@@ -85,25 +94,16 @@ def update_movie(movie_list):
             'sorttitle': 'null',
             'set': 'null',
             'showlink': 'null'}
-        if xbmc.abortRequested or dialog_msg('iscanceled'):
-            log('XBMC abort requested, aborting')
-            break
-        dialog_msg('update',
-                   percentage = int(float(processeditems) / float(totalitems) * 100.0),
-                   line1 = '%s %s / %s' %(__localize__(32017), processeditems, totalitems),
-                   line2 = item['name'],
-                   background = False)
         #Check for IMDB id
-        update_media = False
         if item['imdbnumber'].startswith('tt'):
             log('------------')
             log(item['name'])
             # Handle themoviedb.org
             if __addon__.getSetting(id="movie_rating") == 'themoviedb.org':
-                data_rating = ''
+                movie_data = ''
                 errmsg = ''
                 try:
-                    data_rating = tmdb.get_ratings(item['imdbnumber'])
+                    movie_data = tmdb.get_ratings(item['imdbnumber'])
                 except HTTP404Error, e:
                     errmsg = '404: File not found'
                     data_result = 'skipping'
@@ -123,19 +123,19 @@ def update_movie(movie_list):
                     pass
                 if errmsg:
                     log(errmsg)
-                if data_rating:
-                    if item['votes'] != data_rating['votes']:
-                        log('new rating: %s, old rating: %s' %(data_rating['rating'], item['rating']))
-                        log('new votes: %s, old votes: %s' %(data_rating['votes'], item['votes']))
-                        new_info['rating'] = float(data_rating['rating'])
-                        new_info['votes'] = '"%s"' %data_rating['votes']
+                if movie_data:
+                    if item['votes'] != movie_data['votes']:
+                        log('new votes: %s, old votes: %s' %(movie_data['votes'], item['votes']))
+                        log('new rating: %s, old rating: %s' %(movie_data['rating'], item['rating']))
+                        new_info['rating'] = float(movie_data['rating'])
+                        new_info['votes'] = '"%s"' %movie_data['votes']
                         update_media = True
             
             if __addon__.getSetting(id="movie_cert") == 'themoviedb.org':
-                data_release = ''
+                movie_data = ''
                 errmsg = ''
                 try:
-                    data_release = tmdb.get_releases(item['imdbnumber'])
+                    movie_data = tmdb.get_releases(item['imdbnumber'])
                 except HTTP404Error, e:
                     errmsg = '404: File not found'
                     data_result = 'skipping'
@@ -155,14 +155,14 @@ def update_movie(movie_list):
                     pass
                 if errmsg:
                     log(errmsg)
-                if data_release:
-                    if data_release['mpaa']:
+                if movie_data:
+                    if movie_data['mpaa']:
                         if __addon__.getSetting("movie_cert_nota") == '0':
-                            new_mpaa = '"Rated %s"' %data_release['mpaa']
+                            new_mpaa = '"Rated %s"' %movie_data['mpaa']
                         elif __addon__.getSetting("movie_cert_nota") == '1':
-                            new_mpaa = '"%s_%s"' %(data_release['iso_3166_1'], data_release['mpaa'])
+                            new_mpaa = '"%s_%s"' %(movie_data['iso_3166_1'], movie_data['mpaa'])
                         else:
-                            new_mpaa = '"%s:%s"' %(data_release['iso_3166_1'], data_release['mpaa'])
+                            new_mpaa = '"%s:%s"' %(movie_data['iso_3166_1'], movie_data['mpaa'])
                         if not item['mpaa'] in new_mpaa:
                             log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
                             new_info['mpaa'] = new_mpaa
@@ -198,14 +198,16 @@ def update_movie(movie_list):
                             new_mpaa = '"Rated %s"' %movie_data['mpaa']
                         elif __addon__.getSetting("movie_cert_nota") == '1':
                             new_mpaa = '"%s/%s"' %('US', movie_data['mpaa'])
+                        else:
+                            new_mpaa = '"%s:%s"' %('US', movie_data['mpaa'])
                         if not item['mpaa'] in new_mpaa:
                             log('new mpaa: %s, old mpaa: %s' %(new_mpaa, item['mpaa']))
                             new_info['mpaa'] = new_mpaa
                             update_media = True
                     if __addon__.getSetting(id="movie_rating") == 'IMDb' and movie_data['rating']:
                         if item['votes'] != movie_data['votes']:
-                            log('new rating: %s, old rating: %s' %(movie_data['rating'], item['rating']))
                             log('new votes: %s, old votes: %s' %(movie_data['votes'], item['votes']))
+                            log('new rating: %s, old rating: %s' %(movie_data['rating'], item['rating']))
                             new_info['rating'] = float(movie_data['rating'])
                             new_info['votes'] = '"%s"' %movie_data['votes']
                             update_media = True
